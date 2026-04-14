@@ -3,6 +3,7 @@ import type { ProductCardModel } from "../models/produto-card.model";
 import { useEffect, useState } from "react";
 import { ItemCard } from "../components/molecules/item-card";
 import { CustomButton } from "../components/atoms/custom-button";
+import { CATEGORIES_DATA } from "../models/categorias"
 import axios from "axios";
 
 const api = axios.create({
@@ -15,6 +16,7 @@ export const HomePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const limit = 10;
 
@@ -25,10 +27,14 @@ export const HomePage = () => {
         const offset = (page - 1) * limit;
 
         const response = await api.get("/produtos", {
-          params: { limit, offset, name: searchTerm },
+          params: {
+            limit,
+            offset,
+            name: searchTerm,
+            category: selectedCategory,
+          },
         });
 
-        // Log para depuração - abra o console do navegador e veja o que aparece aqui
         console.log("Resposta da API:", response.data);
 
         if (response.data) {
@@ -42,10 +48,15 @@ export const HomePage = () => {
       }
     };
     fetchProducts();
-  }, [page, searchTerm]);
+  }, [page, searchTerm, selectedCategory]);
 
   const handleSearch = (query: string) => {
     setSearchTerm(query);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
     setPage(1);
   };
 
@@ -55,6 +66,25 @@ export const HomePage = () => {
         <h1 className="text-2xl font-bold mb-6 text-(--color-primary)">
           Nossos Produtos
         </h1>
+
+        <div className="flex items-center gap-2">
+            <label htmlFor="category-filter" className="text-sm font-medium text-gray-400">
+              Filtrar por:
+            </label>
+            <select
+              id="category-filter"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="bg-[#111] text-white border border-zinc-800 rounded px-3 py-2 focus:outline-none focus:border-(--color-primary) min-w-[200px]"
+            >
+              <option value="">Todas as Categorias</option>
+              {CATEGORIES_DATA.filter(c => c.value !== "").map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+        </div>
 
         <div className="flex justify-center items-center gap-4 mb-5">
           <CustomButton

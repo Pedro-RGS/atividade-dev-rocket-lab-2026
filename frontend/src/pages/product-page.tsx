@@ -32,7 +32,7 @@ export const ProductPage = () => {
       } catch (err) {
         console.error("Erro ao carregar produto:", err);
       } finally {
-        setLoadingProduct(false); // Libera a página assim que o produto chegar
+        setLoadingProduct(false);
       }
     };
 
@@ -45,7 +45,7 @@ export const ProductPage = () => {
       } catch (err) {
         console.error("Erro ao carregar avaliações:", err);
       } finally {
-        setLoadingReviews(false); // Libera apenas a seção de comentários
+        setLoadingReviews(false);
       }
     };
 
@@ -91,7 +91,7 @@ export const ProductPage = () => {
   return (
     <MainLayout>
       {showDeleteModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="bg-[#111] border border-zinc-800 p-8 max-w-md w-full shadow-2xl">
             <h2 className="text-white text-xl font-black uppercase italic mb-4">
               Confirmar Exclusão

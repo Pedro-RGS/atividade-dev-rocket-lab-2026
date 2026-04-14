@@ -10,8 +10,8 @@ class ProdutoService:
     def __init__(self, db: Session):
       self.repository = ProdutoRepository(db)
 
-    def get_all(self, limit: int = 10, offset: int = 0, name: str = None) -> List[Produto]:
-      produtos = self.repository.find_all(limit=limit, offset=offset, name=name)
+    def get_all(self, limit: int = 10, offset: int = 0, name: str = None, category: str = None) -> List[Produto]:
+      produtos = self.repository.find_all(limit=limit, offset=offset, name=name, category=category)
       
       total_items = self.repository.count_all(name=name)
       current_page = (offset // limit) + 1
