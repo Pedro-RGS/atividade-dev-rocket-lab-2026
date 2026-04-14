@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { MainLayout } from "../components/templates/main-layout";
 import { CustomInput } from "../components/atoms/custom-input";
@@ -10,47 +10,68 @@ const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-export const CreateProductPage = () => {
+
+export const EditProductPage = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   const [formData, setFormData] = useState({
     nome_produto: "",
     categoria_produto: "",
-    preco: 0,
-    url_imagem: "",
     peso_produto_gramas: 0,
     comprimento_centimetros: 0,
     altura_centimetros: 0,
     largura_centimetros: 0,
   });
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await api.get(`/produtos/${id}`);
+        const product = response.data;
+
+        setFormData({
+          nome_produto: product.nome_produto,
+          categoria_produto: product.categoria_produto,
+          peso_produto_gramas: product.medidas?.peso_produto_gramas || 0,
+          comprimento_centimetros:
+            product.medidas?.comprimento_centimetros || 0,
+          altura_centimetros: product.medidas?.altura_centimetros || 0,
+          largura_centimetros: product.medidas?.largura_centimetros || 0,
+        });
+      } catch (err) {
+        console.error("Erro ao carregar produto:", err);
+        alert("Produto não encontrado.");
+        navigate("/");
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.categoria_produto) {
-      alert("Por favor, selecione uma categoria.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      await api.post("/produtos", {
+      await api.patch(`/produtos/${id}`, {
         nome_produto: formData.nome_produto,
         categoria_produto: formData.categoria_produto,
-        preco: Number(formData.preco),
-        url_imagem: formData.url_imagem,
         peso_produto_gramas: Number(formData.peso_produto_gramas),
         comprimento_centimetros: Number(formData.comprimento_centimetros),
         altura_centimetros: Number(formData.altura_centimetros),
         largura_centimetros: Number(formData.largura_centimetros),
       });
 
-      alert("Produto criado com sucesso!");
+      alert("Produto atualizado com sucesso!");
       navigate("/");
     } catch (err) {
-      console.error("Erro ao criar produto:", err);
-      alert("Erro ao criar produto. Verifique os dados.");
+      console.error("Erro ao atualizar:", err);
+      alert("Erro ao atualizar produto.");
     } finally {
       setLoading(false);
     }
@@ -66,18 +87,21 @@ export const CreateProductPage = () => {
       setFormData((prev) => ({
         ...prev,
         categoria_produto: value,
-        url_imagem: category ? category.image : "",
+        url_imagem: category ? category.image : prev.url_imagem,
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
+  if (fetching)
+    return <div className="text-white p-10">Carregando dados...</div>;
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         <h1 className="text-4xl font-black text-white uppercase italic mb-8 border-l-4 border-(--color-primary) pl-4">
-          Cadastrar Novo Produto
+          Editar Produto
         </h1>
 
         <form
@@ -90,7 +114,7 @@ export const CreateProductPage = () => {
             </label>
             <CustomInput
               name="nome_produto"
-              placeholder="Ex: Teclado gamer"
+              value={formData.nome_produto}
               onChange={handleChange}
               required
             />
@@ -104,12 +128,9 @@ export const CreateProductPage = () => {
               name="categoria_produto"
               className="w-full bg-[#080808] border border-zinc-800 text-white p-3 focus:outline-none focus:border-(--color-primary) appearance-none"
               onChange={handleChange}
-              required
               value={formData.categoria_produto}
+              required
             >
-              <option value="" disabled>
-                Selecione uma opção
-              </option>
               {CATEGORIES_DATA.map((cat) => (
                 <option key={cat.value} value={cat.value}>
                   {cat.label}
@@ -124,11 +145,12 @@ export const CreateProductPage = () => {
 
           <div>
             <label className="text-zinc-500 uppercase text-xs font-bold mb-2 block">
-              Peso (Gramas)
+              Peso (g)
             </label>
             <CustomInput
               name="peso_produto_gramas"
               type="number"
+              value={formData.peso_produto_gramas}
               onChange={handleChange}
               required
             />
@@ -136,11 +158,12 @@ export const CreateProductPage = () => {
 
           <div>
             <label className="text-zinc-500 uppercase text-xs font-bold mb-2 block">
-              Comprimento (cm)
+              Comp. (cm)
             </label>
             <CustomInput
               name="comprimento_centimetros"
               type="number"
+              value={formData.comprimento_centimetros}
               onChange={handleChange}
               required
             />
@@ -153,6 +176,7 @@ export const CreateProductPage = () => {
             <CustomInput
               name="altura_centimetros"
               type="number"
+              value={formData.altura_centimetros}
               onChange={handleChange}
               required
             />
@@ -165,19 +189,28 @@ export const CreateProductPage = () => {
             <CustomInput
               name="largura_centimetros"
               type="number"
+              value={formData.largura_centimetros}
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="md:col-span-2 mt-6">
+          <div className="md:col-span-2 mt-6 flex gap-4">
+            <CustomButton
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/")}
+              className="flex-1"
+            >
+              CANCELAR
+            </CustomButton>
             <CustomButton
               type="submit"
               variant="primary"
-              className="w-full py-4 text-lg"
+              className="flex-1"
               disabled={loading}
             >
-              {loading ? "PROCESSANDO..." : "FINALIZAR CADASTRO"}
+              {loading ? "SALVANDO..." : "SALVAR ALTERAÇÕES"}
             </CustomButton>
           </div>
         </form>

@@ -1,3 +1,4 @@
+import { EditIcon } from "lucide-react";
 import { CustomImage } from "../atoms/custom-image";
 import { Link } from "react-router-dom";
 
@@ -33,6 +34,10 @@ export const ItemCard = ({
           className="w-full h-full group-hover:scale-105 transition-transform duration-500"
         />
       </div>
+
+      <Link to={`/admin/editar-produto/${id}`}>
+        <EditIcon size={18} className="text-zinc-400 hover:text-white" />
+      </Link>
 
       <div className="p-4 flex flex-col gap-1">
         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">

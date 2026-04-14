@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { CustomLogo } from "../atoms/custom-logo"
 import { SearchBar } from "../molecules/search-bar";
 import { CustomIcon } from "../atoms/custom-icon";
-import { ShoppingCart, User } from "lucide-react";
+import { PlusSquare, ShoppingCart, User } from "lucide-react";
 import logoSvg from "../../assets/logo.svg"
 
 interface HeaderProps {
@@ -29,16 +29,27 @@ export const Header = ({ onSearch }: HeaderProps) => {
           <SearchBar onSearch={handleSearch} placeholder="Buscar produtos..." />
         </div>
 
-        <div>
-          <button className="relative p-2 hover:bg-gray-50 rounded-full transition-colors">
-            <CustomIcon icon={User} size="md" color="primary" />
-          </button>
-          <button className="relative p-2 hover:bg-gray-50 rounded-full transition-colors">
-            <CustomIcon icon={ShoppingCart} size="md" color="primary" />
-            <span className="absolute top-0 right-0 bg-(--color-primary) text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-              3
-            </span>
-          </button>
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-4 text-white">
+            <button className="hover:text-(--color-primary) transition-colors">
+              <User size={24} />
+            </button>
+            <button className="hover:text-(--color-primary) transition-colors relative">
+              <ShoppingCart size={24} />
+              <span className="absolute -top-2 -right-2 bg-(--color-primary) text-black text-[10px] font-bold px-1.5 rounded-full">
+                0
+              </span>
+            </button>
+          </div>
+
+          {/* Botão para Criar Produto posicionado abaixo */}
+          <Link
+            to="/product/create"
+            className="text-[10px] font-black uppercase italic text-zinc-500 hover:text-(--color-primary) transition-colors flex items-center gap-1"
+          >
+            <PlusSquare size={12} />
+            Criar Produto
+          </Link>
         </div>
 
         <div className="md:hidden px-4 pb-4">
