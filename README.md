@@ -93,9 +93,20 @@ e teve o design inspirado na [Fallen Store](https://www.fallenstore.com.br/), to
 
 ---
 
+### ⚙️ Funcionalidades
+* Navegação entre todos os produtos com paginação
+* Ao clicar no produto é possível ver todas as informações dele (preço, medida, nota média, vendas, comentários, etc)
+* É possível pesquisar pelo nome e/ou pela categoria dos produtos
+* Edição de produtos
+* Criação de produtos novo
+* É possível deletar um produto da base de dados 
+
+---
+
 ### 💡 Notas de Desenvolvimento
 * Para buscas de produtos, o frontend envia o parâmetro `nome` (ou `name`, conforme configurado na rota do FastAPI).
 * O banco SQLite foi configurado com `render_as_batch=True` no Alembic para permitir alterações de Constraints e Foreign Keys sem perda de dados.
+* Os produtos criados possuem preço 0 pois os valores dos produtos são baseados na sua última venda, como o produto não tem vendas ele tem valor de 0 R$
 
 ---
 
