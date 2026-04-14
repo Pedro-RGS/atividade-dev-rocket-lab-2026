@@ -1,7 +1,7 @@
 from typing import Any, TypeVar, Generic, Optional, Type, List
 
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 T = TypeVar("T")
 
@@ -20,6 +20,10 @@ class BaseRepository(Generic[T]):
     stmt = select(self.model).limit(limit).offset(offset)
     return self.db.execute(stmt).scalars().all()
   
+  def count(self) -> int:
+    stmt = select(func.count()).select_from(self.model)
+    return self.db.execute(stmt).scalar()
+
   def filter_by(self, **kwargs) -> List[T]:
     stmt = select(self.model).filter_by(**kwargs)
     return self.db.execute(stmt).scalars().all()

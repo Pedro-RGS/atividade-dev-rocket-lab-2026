@@ -18,5 +18,5 @@ class Produto(Base):
     largura_centimetros: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
     # relationships
-    itens_pedido: Mapped[list["ItemPedido"]] = relationship("ItemPedido", back_populates="produto")
+    itens_pedido: Mapped[list["ItemPedido"]] = relationship("ItemPedido", back_populates="produto", cascade="all, delete-orphan")
     imagem_categoria: Mapped["CategoriaImagem"] = relationship("CategoriaImagem", back_populates="produtos")

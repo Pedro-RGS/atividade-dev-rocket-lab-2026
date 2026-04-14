@@ -16,10 +16,10 @@ def get_produto_detalhes(id_produto: str, db: Session = Depends(get_db)):
   service = ProdutoService(db)
   return service.get_by_id(id_produto)
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=List[ProdutoListResponse])
-def list_produtos(limit: int = 10, offset: int = 0, db: Session = Depends(get_db)):
+@router.get("/", status_code=status.HTTP_200_OK, response_model=ProdutoListResponse)
+def list_produtos(limit: int = 10, offset: int = 0, name: str = None, db: Session = Depends(get_db)):
   service = ProdutoService(db)
-  return service.get_all(limit=limit, offset=offset)
+  return service.get_all(limit=limit, offset=offset, name=name)
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProdutoCreateResponse)
 def create_produto(produto_data: ProdutoCreateRequest, db: Session = Depends(get_db)):

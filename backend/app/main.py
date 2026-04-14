@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from app.routes import produtos_routes
+from app.routes import avaliacoes_pedido_routes
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Sistema de Compras Online",
@@ -7,7 +9,22 @@ app = FastAPI(
     version="1.0.0",
 )
 
+origins = [
+    "http://localhost:5173",  # Porta padrão do Vite/React
+    "http://localhost:3000",  # Porta padrão do Create React App
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(produtos_routes.router)
+app.include_router(avaliacoes_pedido_routes.router)
 
 @app.get("/", tags=["Health"])
 def health_check():

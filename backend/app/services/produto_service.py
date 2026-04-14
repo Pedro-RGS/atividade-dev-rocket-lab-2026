@@ -10,11 +10,21 @@ class ProdutoService:
     def __init__(self, db: Session):
       self.repository = ProdutoRepository(db)
 
-    def get_all(self, limit: int = 100, offset: int = 0) -> List[Produto]:
-      produtos = self.repository.find_all(limit=limit, offset=offset)
+    def get_all(self, limit: int = 10, offset: int = 0, name: str = None) -> List[Produto]:
+      produtos = self.repository.find_all(limit=limit, offset=offset, name=name)
       
-      return [
-        {
+      total_items = self.repository.count_all(name=name)
+      current_page = (offset // limit) + 1
+      total_pages = (total_items + limit - 1) // limit  # Cál
+      
+      return {
+        "meta": {
+          "total_items": total_items,
+          "total_pages": total_pages,
+          "current_page": current_page,
+          "limit": limit,
+          },
+        "data": [{
           "id_produto": p.id_produto,
           "nome_produto": p.nome_produto,
           "categoria_produto": p.categoria_produto,
@@ -22,7 +32,7 @@ class ProdutoService:
           "url_imagem": p.imagem_categoria.Link if p.imagem_categoria else None
         }
         for p in produtos
-      ]
+      ]}
 
     def get_by_id(self, id_produto: str) -> Produto:
       produto = self.repository.find_by_id(id_produto)
